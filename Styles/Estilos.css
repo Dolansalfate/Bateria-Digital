@@ -1,0 +1,14 @@
+QPushButton{
+
+    border : 2px solid gray;
+    border-radius : 8px;
+
+}
+QWidget
+{
+        background-color: #3a3a3a;
+        color: #fff;
+        selection-background-color: #b78620;
+        selection-color: #000;
+
+}
