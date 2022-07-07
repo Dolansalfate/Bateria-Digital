@@ -14,6 +14,7 @@
 #include <QVector>
 #include <asignarcanal.h>
 #include <clock.h>
+#include <datosgrilla.h>
 //#include <configuracion.h>
 
 
@@ -31,6 +32,8 @@ public:
     ~MainWindow();
 
     //Configuracion
+
+    DatosGrilla ConfiguracionGrilla;
 
     //Configuracion ConfiguracionListas;
 

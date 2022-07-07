@@ -29,6 +29,7 @@ MainWindow::MainWindow(QWidget *parent)
     ThreadTimerExterno=new QThread();
     ThreadTimerExterno->setObjectName("Timer Thread");
 
+
     this->thread()->setObjectName("Thread Mainwindow");
 
     QString BASEURLAUDIOS = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/MP3/";
