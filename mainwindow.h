@@ -39,14 +39,17 @@ public:
 
     // Timmer
 
-    Clock *timerExterno;
+    //Clock *timerExterno;
+    Clock timerExterno;
 
     AsignarCanal *Bombo;
     AsignarCanal *Caja;
     AsignarCanal *HiHatC;
     AsignarCanal *HiHatO;
 
-    QThread *ThreadTimerExterno;
+    //QThread *ThreadTimerExterno;
+    QThread ThreadTimerExterno;
+    QThread *ThreadVentanaMixer;
 
     //QThread nuevoThread;
 
@@ -177,7 +180,7 @@ public:
     // Ventanas Adicionales
 
     ElegirBeat *VentanaElegirBeat = new ElegirBeat(this);
-    VentanaMixer *VentanaverMixer = new VentanaMixer(this);
+    VentanaMixer *VentanaverMixer = new VentanaMixer();
 
 
     void CargarListasaGrilla();

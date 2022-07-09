@@ -9,6 +9,7 @@
 #include <QAudioProbe>
 #include <QMediaPlayer>
 #include <QMutex>
+#include <QAudioDecoder>
 
 class AsignarCanal : public QObject
 {
@@ -24,6 +25,7 @@ public:
     QMediaPlayer *SlotP = new QMediaPlayer();
     QMediaPlayer *SlotMF = new QMediaPlayer();
     QMediaPlayer *SlotF = new QMediaPlayer();
+    QAudioDecoder Decoder;
 
     QAudioProbe *AnalizarSlotP = new QAudioProbe();
     QAudioProbe *AnalizarSlotMF = new QAudioProbe();
@@ -51,6 +53,7 @@ public slots:
     void processBuffer(QAudioBuffer buffer);
     void pintarProgressBar();
     void AsignarUrlArchivos(QString Slot1, QString Slot2, QString Slot3);
+    void ProcesarDecoder(QAudioBuffer bufferDecoder);
 };
 
 #endif // ASIGNARCANAL_H

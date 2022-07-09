@@ -22,7 +22,7 @@ QString readTextFile(QString path)
 
 int main(int argc, char *argv[])
 {
-    qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";
+    //qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";qDebug()<<"Saliendo";
     QApplication a(argc, argv);
     QString css = readTextFile(":/Styles/Estilos.css");
 

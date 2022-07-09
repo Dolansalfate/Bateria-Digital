@@ -25,24 +25,29 @@ MainWindow::MainWindow(QWidget *parent)
     HiHatO = new AsignarCanal(nullptr,3);
     //NuevoCanal = new AsignarCanal(nullptr,4);
     //Creacion Thread Timer
-    timerExterno = new Clock(nullptr);
-    ThreadTimerExterno=new QThread();
-    ThreadTimerExterno->setObjectName("Timer Thread");
+    //timerExterno = new Clock(nullptr);
+    //ThreadTimerExterno=new QThread();
+    ThreadVentanaMixer = new QThread();
+    ThreadVentanaMixer->setObjectName("Thread Mixer");
+    ThreadTimerExterno.setObjectName("Timer Thread");
 
 
     this->thread()->setObjectName("Thread Mainwindow");
 
     QString BASEURLAUDIOS = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/MP3/";
 
-    connect(VentanaverMixer,&VentanaMixer::CambioVolumen,this,&MainWindow::AjustarVolumen);
+
 
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirBombo);
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirCaja);
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirHiHat);
     connect(VentanaElegirBeat,&ElegirBeat::CambiarIntensidadGrilla,this,&MainWindow::RecibirValorIntensisdad);
-    timerExterno->moveToThread(ThreadTimerExterno);
-    ThreadTimerExterno->start();
-    ThreadTimerExterno->setPriority(QThread::HighPriority);
+    timerExterno.moveToThread(&ThreadTimerExterno);
+    VentanaverMixer->moveToThread(ThreadVentanaMixer);
+    ThreadTimerExterno.start();
+    ThreadTimerExterno.setPriority(QThread::HighPriority);
+    ThreadVentanaMixer->start();
+    ThreadVentanaMixer->setPriority(QThread::HighPriority);
 
     TiempoTimer=40;
     EstadobotonPlay = false;
@@ -50,10 +55,10 @@ MainWindow::MainWindow(QWidget *parent)
     ui->BotonCompas_1->setStyleSheet(BeatNaranjo);
     CompasActual=1;
     ApagarTodolosLed();
-
-    connect(timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaLeds,Qt::QueuedConnection);
-    connect(timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaledsGrilla,Qt::QueuedConnection);
-    connect(timerExterno,&Clock::CambiarGrilla,this,&MainWindow::ReproducirAudios,Qt::QueuedConnection);
+    connect(VentanaverMixer,&VentanaMixer::CambioVolumen,this,&MainWindow::AjustarVolumen,Qt::QueuedConnection);
+    connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaLeds,Qt::QueuedConnection);
+    connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaledsGrilla,Qt::QueuedConnection);
+    connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::ReproducirAudios,Qt::QueuedConnection);
 
     Bombo->AsignarUrlArchivos(BASEURLAUDIOS+"KickPiano.mp3",BASEURLAUDIOS+"KickMForte.mp3",BASEURLAUDIOS+"KickForte.mp3");
     connect(Bombo,&AsignarCanal::Peak,VentanaverMixer,&VentanaMixer::PintarProgressbar);
@@ -76,14 +81,19 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow()
 {
+
+    timerExterno.Stop();
+    ThreadTimerExterno.deleteLater();
+    ThreadVentanaMixer->deleteLater();
     delete ui;
     delete Bombo;
     delete Caja;
     delete HiHatC;
     delete HiHatO;
-    delete timerExterno;
+    //delete timerExterno;
     delete VentanaverMixer;
     //delete ConfiguracionListas;
+
 }
 
 void MainWindow::ConfiguracionInicial()
@@ -128,7 +138,7 @@ void MainWindow::ConfiguracionInicial()
     Lista2DHiHat<<EstadoHiHat5<<EstadoHiHat6<<EstadoHiHat7<<EstadoHiHat8;
     Lista2DHiHat<<EstadoHiHat9<<EstadoHiHat10<<EstadoHiHat11<<EstadoHiHat12;
     Lista2DHiHat<<EstadoHiHat13<<EstadoHiHat14<<EstadoHiHat15<<EstadoHiHat16;
-    timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
+    timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
 
 
 
@@ -686,7 +696,7 @@ void MainWindow::on_comboBoxGrilla_currentIndexChanged(int index)
 {
 
     Actualizargrilla(index);
-    if(ui->comboBoxGrilla->currentIndex()>0){timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
+    if(ui->comboBoxGrilla->currentIndex()>0){timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
 }
 
 
@@ -827,7 +837,7 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
 
 void MainWindow::on_spinBoxBMP_valueChanged(int arg1)
 {
-    if(ui->comboBoxGrilla->currentIndex()>0){timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
+    if(ui->comboBoxGrilla->currentIndex()>0){timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
 }
 
 
@@ -839,14 +849,14 @@ void MainWindow::on_Subdivision_currentIndexChanged(int index)
 
 void MainWindow::on_BotonPlay_toggled(bool checked)
 {
-    timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
+    timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
     EstadobotonPlay=checked;
     if(EstadobotonPlay)
     {
-        timerExterno->Play();
-           qDebug()<<"Timer inicia en Thread"<<timerExterno->thread()->objectName()<<timerExterno->thread();
+        timerExterno.Play();
+           qDebug()<<"Timer inicia en Thread"<<timerExterno.thread()->objectName()<<timerExterno.thread();
     }
-    if(!EstadobotonPlay){timerExterno->Stop();}
+    if(!EstadobotonPlay){timerExterno.Stop();}
     ContadorTimer=1;
     ContadorPulsos=1;
     ContadorGrilla=1;
@@ -866,7 +876,7 @@ void MainWindow::on_BotonCompas_1_clicked()
     ui->BotonCompas_1->setChecked(true);
     ui->BotonCompas_1->setStyleSheet(BeatNaranjo);
     CompasActual = 1;
-    timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
+    timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
     ApagarTodolosLed();
 }
 void MainWindow::on_BotonCompas_2_clicked()
@@ -875,7 +885,7 @@ void MainWindow::on_BotonCompas_2_clicked()
     ui->BotonCompas_2->setChecked(true);
     ui->BotonCompas_2->setStyleSheet(BeatNaranjo);
     CompasActual = 2;
-    timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
+    timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
     ApagarTodolosLed();
 }
 void MainWindow::on_BotonCompas_3_clicked()
@@ -883,7 +893,7 @@ void MainWindow::on_BotonCompas_3_clicked()
     DeschekearTodoslosBotonesCompas();
     ui->BotonCompas_3->setChecked(true);
     ui->BotonCompas_3->setStyleSheet(BeatNaranjo);
-    timerExterno->CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
+    timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
     CompasActual = 3;
 }
 void MainWindow::on_BotonCompas_4_clicked()

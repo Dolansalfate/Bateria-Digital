@@ -3,7 +3,8 @@
 AsignarCanal::AsignarCanal(QObject *parent, int CanalAsignado, bool *estadoSignalBuffer)
     : QObject{parent}
 {
-
+    const QString Mp3decoderprueba = "ENSAYO PITOWILSONmp32.mp3";
+    Decoder.setSourceFilename(Mp3decoderprueba);
     this->SignalBuffer = estadoSignalBuffer;
     this->Canalasignado=CanalAsignado;
     AnalizarSlotP->setSource(SlotP);
@@ -16,6 +17,7 @@ AsignarCanal::AsignarCanal(QObject *parent, int CanalAsignado, bool *estadoSigna
     connect(AnalizarSlotP, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
     connect(AnalizarSlotMF, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
     connect(AnalizarSlotF, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
+    connect(&Decoder,SIGNAL(bufferReady(QAudioBuffer)),this,SLOT(ProcesarDecoder(QAudioBUffer)));
 
 
 }
@@ -44,18 +46,21 @@ void AsignarCanal::Reproducir(int index)
 
             SlotP->stop();
             SlotP->play();
+            Decoder.start();
         break;
 
     case 2:
 
             SlotMF->stop();
             SlotMF->play();
+            Decoder.start();
         break;
 
     case 3:
 
-            SlotF->stop();
-            SlotF->play();
+            //SlotF->stop();
+            //SlotF->play();
+            Decoder.start();
         break;
 
     }
@@ -143,6 +148,11 @@ void AsignarCanal::AsignarUrlArchivos(QString Slot1, QString Slot2, QString Slot
     SlotP->setMedia(QUrl::fromLocalFile(Slot1));
     SlotMF->setMedia(QUrl::fromLocalFile(Slot2));
     SlotF->setMedia(QUrl::fromLocalFile(Slot3));
+
+
+
+    qDebug()<<"Formato = "<<Decoder.audioFormat();
+
 }
 
 void AsignarCanal::CambiodeVolumen(int volumen)
@@ -154,4 +164,9 @@ void AsignarCanal::CambiodeVolumen(int volumen)
     SlotF->setVolume(qRound(linearVolume * 100));
     SlotMF->setVolume(qRound(linearVolume * 100));
     SlotP->setVolume(qRound(linearVolume * 100));
+}
+
+void AsignarCanal::ProcesarDecoder(QAudioBuffer bufferDecoder)
+{
+ qDebug()<<"Analizando Decoder";
 }
