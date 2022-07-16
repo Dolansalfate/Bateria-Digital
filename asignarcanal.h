@@ -10,6 +10,9 @@
 #include <QMediaPlayer>
 #include <QMutex>
 #include <QAudioDecoder>
+#include <qendian.h>
+#include <QAudioDeviceInfo>
+#include <QAudioOutput>
 
 class AsignarCanal : public QObject
 {
@@ -21,11 +24,13 @@ public:
 
     bool *SignalBuffer = new bool();
     bool Almacenarboolsignal;
-
+    qreal m_level = 0.0;
+    //AudioFileStream *m_audioFileStream;
+    quint32 m_maxAmplitude = 0;
     QMediaPlayer *SlotP = new QMediaPlayer();
     QMediaPlayer *SlotMF = new QMediaPlayer();
     QMediaPlayer *SlotF = new QMediaPlayer();
-    QAudioDecoder Decoder;
+    QAudioDecoder *Decoder = new QAudioDecoder(this);
 
     QAudioProbe *AnalizarSlotP = new QAudioProbe();
     QAudioProbe *AnalizarSlotMF = new QAudioProbe();
@@ -44,6 +49,7 @@ public:
     float numeroLoopDecaimiento =0;
 
     void CambiodeVolumen(int volumen);
+    void IniciarDecoder();
 signals:
 
     void Peak(int Canal,float Valorpeak);

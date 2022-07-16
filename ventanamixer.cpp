@@ -9,8 +9,8 @@ VentanaMixer::VentanaMixer(QWidget *parent,bool *estadoSignalBuffer) :
     float minimo = (1440000000);
     ui->setupUi(this);
     this->estadoSignal=estadoSignalBuffer;
-    ui->BarraCanal1L->setRange(10,100);
-    ui->BarraCanal1R->setRange(10,100);
+    ui->BarraCanal1L->setRange(-210,0);
+    ui->BarraCanal1R->setRange(-210,0);
     ui->BarraCanal2L->setRange(10,100);
     ui->BarraCanal2R->setRange(10,100);
     ui->BarraCanal3L->setRange(880000000,958000000);

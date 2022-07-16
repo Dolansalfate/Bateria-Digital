@@ -27,14 +27,12 @@ MainWindow::MainWindow(QWidget *parent)
     //Creacion Thread Timer
     //timerExterno = new Clock(nullptr);
     //ThreadTimerExterno=new QThread();
-    ThreadVentanaMixer = new QThread();
-    ThreadVentanaMixer->setObjectName("Thread Mixer");
     ThreadTimerExterno.setObjectName("Timer Thread");
 
 
     this->thread()->setObjectName("Thread Mainwindow");
 
-    QString BASEURLAUDIOS = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/MP3/";
+    QString BASEURLAUDIOS = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/Bateria-Digital/MP3/";
 
 
 
@@ -43,11 +41,10 @@ MainWindow::MainWindow(QWidget *parent)
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirHiHat);
     connect(VentanaElegirBeat,&ElegirBeat::CambiarIntensidadGrilla,this,&MainWindow::RecibirValorIntensisdad);
     timerExterno.moveToThread(&ThreadTimerExterno);
-    VentanaverMixer->moveToThread(ThreadVentanaMixer);
+
     ThreadTimerExterno.start();
     ThreadTimerExterno.setPriority(QThread::HighPriority);
-    ThreadVentanaMixer->start();
-    ThreadVentanaMixer->setPriority(QThread::HighPriority);
+
 
     TiempoTimer=40;
     EstadobotonPlay = false;
@@ -84,7 +81,7 @@ MainWindow::~MainWindow()
 
     timerExterno.Stop();
     ThreadTimerExterno.deleteLater();
-    ThreadVentanaMixer->deleteLater();
+
     delete ui;
     delete Bombo;
     delete Caja;
@@ -391,7 +388,7 @@ void MainWindow::Actualizargrilla(int SubdivisionGrilla)
 int MainWindow::CalcularBMPaMilisec(int BMP)
 {
 
-
+return 0;
 }
 
 void MainWindow::ApagarTodolosLed()

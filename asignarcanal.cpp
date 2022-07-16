@@ -3,8 +3,12 @@
 AsignarCanal::AsignarCanal(QObject *parent, int CanalAsignado, bool *estadoSignalBuffer)
     : QObject{parent}
 {
-    const QString Mp3decoderprueba = "ENSAYO PITOWILSONmp32.mp3";
-    Decoder.setSourceFilename(Mp3decoderprueba);
+    const QString Mp3decoderprueba = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/Bateria-Digital/MP3/ENSAYO PITOWILSONmp32.mp3";
+    Decoder->setSourceFilename(Mp3decoderprueba);
+    QAudioDeviceInfo device = QAudioDeviceInfo::defaultOutputDevice();
+    qDebug()<<"Formato salida predefinida = "<<device.preferredFormat();
+    Decoder->setAudioFormat(device.preferredFormat());
+
     this->SignalBuffer = estadoSignalBuffer;
     this->Canalasignado=CanalAsignado;
     AnalizarSlotP->setSource(SlotP);
@@ -17,8 +21,16 @@ AsignarCanal::AsignarCanal(QObject *parent, int CanalAsignado, bool *estadoSigna
     connect(AnalizarSlotP, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
     connect(AnalizarSlotMF, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
     connect(AnalizarSlotF, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
-    connect(&Decoder,SIGNAL(bufferReady(QAudioBuffer)),this,SLOT(ProcesarDecoder(QAudioBUffer)));
+    connect(Decoder,SIGNAL(bufferReady(QAudioBuffer)),this,SLOT(ProcesarDecoder(QAudioBUffer)));
 
+
+
+}
+
+
+
+void AsignarCanal::IniciarDecoder()
+{
 
 }
 
@@ -26,6 +38,7 @@ AsignarCanal::~AsignarCanal()
 {
     disconnect(AnalizarSlotF, SIGNAL(audioBufferProbed(QAudioBuffer)), this, SLOT(processBuffer(QAudioBuffer)));
     delete SignalBuffer;
+
     emit AnalizarSlotF->flush();
     emit AnalizarSlotP->flush();
     emit AnalizarSlotMF->flush();
@@ -46,21 +59,23 @@ void AsignarCanal::Reproducir(int index)
 
             SlotP->stop();
             SlotP->play();
-            Decoder.start();
+            Decoder->start();
         break;
 
     case 2:
 
             SlotMF->stop();
             SlotMF->play();
-            Decoder.start();
+            Decoder->start();
         break;
 
     case 3:
 
             //SlotF->stop();
             //SlotF->play();
-            Decoder.start();
+        qDebug()<<"Fuente del decoder"<<Decoder->sourceFilename();
+            Decoder->start();
+
         break;
 
     }
@@ -78,6 +93,7 @@ Mutex.lock();
     arrayDeDatos = buffer.data<int>();
     datosfloat = buffer.data<float>();
     datosDouble = buffer.data<double>();
+    const unsigned char *ptr = reinterpret_cast<const unsigned char *>(buffer.data<char>());
     peakDelArrayActual = 0;
     int n = buffer.frameCount();
     //double x[n];
@@ -91,23 +107,33 @@ Mutex.lock();
     }
     //qDebug()<<" X "<<x[int(n/2)];
 */
+   m_maxAmplitude = 32767;
+    quint32 value = 0;
+    quint32 maxValue = 0;
     for(int i=0;i<buffer.frameCount()-1;i++)
+
     {
         //peakDelArrayActual = qMax(int(arrayDeDatos[i]),peakDelArrayActual);
         //if(datosDouble[i]<0){datosDouble[i]=-datosDouble[i];}
 
         //qDebug()<<datosDouble[i];
+        quint32 value = 0;
+
+        value = qAbs(qFromLittleEndian<qint16>(ptr));
         almacenarpeaksdividir =almacenarpeaksdividir+std::abs(arrayDeDatos[i]);
         peakDelArrayActual = qMax(arrayDeDatos[i],peakDelArrayActual);
+        maxValue = qMax(value, maxValue);
 
     }
-
-    //peakDelArrayActual=-20*log(peakDelArrayActual);
+    maxValue = qMin(maxValue, m_maxAmplitude);
+    m_level = qreal(maxValue) / m_maxAmplitude;
+    m_level=20*log(m_level);
     //qDebug()<<"Media Peak = "<<-20*log10(almacenarpeaksdividir/n);
     peakHaBajadoDeVolumen = peakPintadoEnProgressBar >= float(peakDelArrayActual);
     peakAnterior = peakDelArrayActual;
-
-    pintarProgressBar();
+    qDebug()<<"NuevoIntento meter = "<<m_level;
+    emit Peak(Canalasignado,m_level);
+    //pintarProgressBar();
 
 
     emit AnalizarSlotF->flush();
@@ -134,7 +160,7 @@ void AsignarCanal::pintarProgressBar()
         peakPintadoEnProgressBar = (20*log10(peakPintadoEnProgressBar)-100);
     }
 
-    emit Peak(Canalasignado,peakPintadoEnProgressBar);
+    //emit Peak(Canalasignado,peakPintadoEnProgressBar);
     Almacenarboolsignal=false;
     this->SignalBuffer=&Almacenarboolsignal;
 
@@ -151,7 +177,7 @@ void AsignarCanal::AsignarUrlArchivos(QString Slot1, QString Slot2, QString Slot
 
 
 
-    qDebug()<<"Formato = "<<Decoder.audioFormat();
+    qDebug()<<"Formato = "<<Decoder->audioFormat();
 
 }
 

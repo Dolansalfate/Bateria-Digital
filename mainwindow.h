@@ -49,7 +49,7 @@ public:
 
     //QThread *ThreadTimerExterno;
     QThread ThreadTimerExterno;
-    QThread *ThreadVentanaMixer;
+
 
     //QThread nuevoThread;
 
