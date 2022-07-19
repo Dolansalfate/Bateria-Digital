@@ -16,26 +16,16 @@ MainWindow::MainWindow(QWidget *parent)
     ListadoColores.append(BeatAmarillo);
     ListadoColores.append(BeatVerde);
     ListadoColores.append(BeatNaranjo);
-    //ConfiguracionListas = new Configuracion(nullptr);
     // Funcion Inicial
     ConfiguracionInicial();
     //Creacion Canales de audio
     Bombo = new AsignarCanal(nullptr,1);
     Caja = new AsignarCanal(nullptr,2);
     HiHatO = new AsignarCanal(nullptr,3);
-    //NuevoCanal = new AsignarCanal(nullptr,4);
-    //Creacion Thread Timer
-    /*timerExterno = new Clock(nullptr);
-    ThreadTimerExterno=new QThread();*/
     ThreadTimerExterno.setObjectName("Timer Thread");
-
-
     this->thread()->setObjectName("Thread Mainwindow");
-
     QString BASEURLAUDIOS = "C:/Users/PC-LAB/Documents/GitHub/BateriaDigital/Bateria-Digital/MP3/";
-
-
-
+    connect(&ConfiguracionGrilla,&DatosGrilla::porcentajeTransferenciaCompletado,Ventanacarga,&VentanaCarga::ActualizarPorcentaje);
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirBombo);
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirCaja);
     connect(this,&MainWindow::ReproducirAudiosConIntensidad,this,&MainWindow::ReproducirHiHat);
@@ -121,32 +111,14 @@ void MainWindow::ConfiguracionInicial()
     ContadorGrilla = 1;
     ui->comboBoxGrilla->setCurrentIndex(4);
     Actualizargrilla(ui->comboBoxGrilla->currentIndex());
-
-    Lista2DBombo<<EstadoBombo1<<EstadoBombo2<<EstadoBombo3<<EstadoBombo4;
-    Lista2DBombo<<EstadoBombo5<<EstadoBombo6<<EstadoBombo7<<EstadoBombo8;
-    Lista2DBombo<<EstadoBombo9<<EstadoBombo10<<EstadoBombo11<<EstadoBombo12;
-    Lista2DBombo<<EstadoBombo13<<EstadoBombo14<<EstadoBombo15<<EstadoBombo16;
-
-    Lista2DCaja<<EstadoCaja1<<EstadoCaja2<<EstadoCaja3<<EstadoCaja4;
-    Lista2DCaja<<EstadoCaja5<<EstadoCaja6<<EstadoCaja7<<EstadoCaja8;
-    Lista2DCaja<<EstadoCaja9<<EstadoCaja10<<EstadoCaja11<<EstadoCaja12;
-    Lista2DCaja<<EstadoCaja13<<EstadoCaja14<<EstadoCaja15<<EstadoCaja16;
-
-    Lista2DHiHat<<EstadoHiHat1<<EstadoHiHat2<<EstadoHiHat3<<EstadoHiHat4;
-    Lista2DHiHat<<EstadoHiHat5<<EstadoHiHat6<<EstadoHiHat7<<EstadoHiHat8;
-    Lista2DHiHat<<EstadoHiHat9<<EstadoHiHat10<<EstadoHiHat11<<EstadoHiHat12;
-    Lista2DHiHat<<EstadoHiHat13<<EstadoHiHat14<<EstadoHiHat15<<EstadoHiHat16;
     timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);
-
-
-
 }
 
 // Cargar Valores a Etiquetas y Grilla
 
 void MainWindow::IniciarTimer()
 {
-    //TimmerCambioClick->start(10);
+
 }
 
 //Guardar Y Cargar Listas de Pulsos
@@ -156,6 +128,9 @@ void MainWindow::GuardarListas()
    /* ConfiguracionListas.GuardarListas("Bombo",Lista2DBombo[1]);
     ConfiguracionListas.GuardarListas("Caja",Lista2DCaja[1]);
     ConfiguracionListas.GuardarListas("Hihat",Lista2DHiHat[1]);*/
+    Ventanacarga->show();
+    ConfiguracionGrilla.GuardarListas();
+    Ventanacarga->close();
 }
 
 void MainWindow::CargarListas()
@@ -163,30 +138,16 @@ void MainWindow::CargarListas()
    /*Lista2DBombo[1]= ConfiguracionListas.CargarListas("Bombo",Lista2DBombo[1]);
     Lista2DCaja[1]= ConfiguracionListas.CargarListas("Caja",Lista2DCaja[1]);
     Lista2DHiHat[1]= ConfiguracionListas.CargarListas("Hihat",Lista2DHiHat[1]);*/
+    ConfiguracionGrilla.CargarListas();
 }
 
 void MainWindow::CargarListasaGrilla()
 {
-   /*int Valoralmacenado=0;
-    for (int x=0;x<Lista2DBombo[1].length();x++)
 
-
-    {
-        switch (Valoralmacenado) {
-        case 0:
-            MainWindow::findChild<QPushButton*>("BotonPulso1Bombo" + QString::number(x)+"_1")->setVisible(false);
-            break;
-        default:
-            break;
-        }
-
-    }*/
 }
-
 
 void MainWindow::CargarAjustesMetrica(int BMP,int Pulsos, int Subdivision, int PosicionGrilla)
 {
-
     ui->spinBoxBMP->setValue(BMP);
     ui->spinBoxPulsos->setValue(Pulsos);
     ui->comboBoxSubdivision->setCurrentIndex(Subdivision);
@@ -194,28 +155,22 @@ void MainWindow::CargarAjustesMetrica(int BMP,int Pulsos, int Subdivision, int P
     ui->EtiquetaMetrica->setText(TextoMetrica);
     ui->comboBoxGrilla->setCurrentIndex(PosicionGrilla);
     Actualizargrilla(PosicionGrilla);
-
 }
 
 void MainWindow::PasarConfiguracionAlaGrilla()
 {
-    //Calcular cantidad de tiempo y esconder los no necesario
 
 }
-
 
 // Logica Esconder y mostra botones de la grilla
 
 void MainWindow::Actualizargrilla(int SubdivisionGrilla)
 {
-
     if(SubdivisionGrilla==0 | ui->comboBoxGrilla->currentIndex()==0){return;}
     // Esconder Todos los botones
 
-
     for(int x = 1;x<7;x++)
     {
-
     // Bombo
 
         MainWindow::findChild<QPushButton*>("BotonPulso1Bombo" + QString::number(x)+"_1")->setVisible(false);
@@ -355,7 +310,6 @@ void MainWindow::Actualizargrilla(int SubdivisionGrilla)
 
     // Prender Botonoes utilizados segun grilla
 
-
    for(int x = 1;x<=ui->spinBoxPulsos->value();x++)
 
    {
@@ -383,7 +337,6 @@ void MainWindow::Actualizargrilla(int SubdivisionGrilla)
 
 }
 
-
 // Logica Leds: Control de la muestra visual del click
 
 int MainWindow::CalcularBMPaMilisec(int BMP)
@@ -404,18 +357,18 @@ void MainWindow::ApagarTodolosLed()
 
             CompasyGrillaAIndex = (x-1)*6;
             CompasyGrillaAIndex=CompasyGrillaAIndex+(i-1);
-            MainWindow::findChild<QPushButton*>("BotonPulso1Bombo" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[Lista2DBombo[CompasActual][CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1Caja" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[Lista2DCaja[CompasActual][CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1HH" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[Lista2DHiHat[CompasActual][CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1T1_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoTom1_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1T2_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoTom2_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1T3_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoTom3_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1T4_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoTom4_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1CrashL" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoCrash1_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1CrashR" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoCrash2_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1Ride" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoRide_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1Acc" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoAcc_1[CompasyGrillaAIndex]]);
-            MainWindow::findChild<QPushButton*>("BotonPulso1Click" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[EstadoClick_1[CompasyGrillaAIndex]]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1Bombo" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(1,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1Caja" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(2,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1HH" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(3,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1T1_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(4,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1T2_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(5,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1T3_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(6,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1T4_" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(7,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1CrashL" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(8,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1CrashR" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(9,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1Ride" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(10,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1Acc" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(11,CompasActual,CompasyGrillaAIndex)]);
+            MainWindow::findChild<QPushButton*>("BotonPulso1Click" + QString::number(i)+"_"+QString::number(x))->setStyleSheet(ListadoColoresIntensidad[ConfiguracionGrilla.DevolverValordeunaGrilla(12,CompasActual,CompasyGrillaAIndex)]);
 
         }
 
@@ -424,17 +377,13 @@ void MainWindow::ApagarTodolosLed()
 
 void MainWindow::LogicaLeds(int Pulso,int Grilla)
 {
-
-
        ui->BotonPulso1->setStyleSheet(BeatBlanco);ui->BotonPulso2->setStyleSheet(BeatBlanco);
        ui->BotonPulso3->setStyleSheet(BeatBlanco);ui->BotonPulso4->setStyleSheet(BeatBlanco);
        ui->BotonPulso5->setStyleSheet(BeatBlanco);ui->BotonPulso6->setStyleSheet(BeatBlanco);
        ui->BotonPulso7->setStyleSheet(BeatBlanco);ui->BotonPulso8->setStyleSheet(BeatBlanco);
        ui->BotonPulso9->setStyleSheet(BeatBlanco);
        MainWindow::findChild<QPushButton*>("BotonPulso"+QString::number(Pulso))->setStyleSheet(BeatAzul);
-
 }
-
 
 void MainWindow::LogicaledsGrilla(int Pulso,int Grilla)
 {
@@ -451,7 +400,6 @@ void MainWindow::LogicaledsGrilla(int Pulso,int Grilla)
     MainWindow::findChild<QPushButton*>("BotonPulso1Ride" + QString::number(Grilla)+"_"+QString::number(Pulso))->setStyleSheet(BeatAzul);
     MainWindow::findChild<QPushButton*>("BotonPulso1Acc" + QString::number(Grilla)+"_"+QString::number(Pulso))->setStyleSheet(BeatAzul);
     MainWindow::findChild<QPushButton*>("BotonPulso1Click" + QString::number(Grilla)+"_"+QString::number(Pulso))->setStyleSheet(BeatAzul);
-
 }
 
 
@@ -466,110 +414,86 @@ void MainWindow::AjustarVolumen(int canal, int volumen)
     case 1:
             Bombo->CambiodeVolumen(volumen);
         break;
-
     case 2:
             Caja->CambiodeVolumen(volumen);
         break;
-
     case 3:
             HiHatO->CambiodeVolumen(volumen);
             HiHatC->CambiodeVolumen(volumen);
         break;
-
     }
 }
-
 void MainWindow::ReproducirBombo(int PosicionGrilla, int Compas)
 {
-    int intensidad = Lista2DBombo[Compas][PosicionGrilla-1];
+    int intensidad = ConfiguracionGrilla.DevolverValordeunaGrilla(1,Compas,PosicionGrilla-1);
     switch (intensidad) {
     case 0:
         break;
-
     case 1:
-
         Bombo->Reproducir(1);
         break;
-
     case 2:
-
         Bombo->Reproducir(2);
         break;
-
     case 3:
 
         Bombo->Reproducir(3);
         break;
     }
-
 }
 
 void MainWindow::ReproducirCaja(int PosicionGrilla,int Compas)
 {
 
-    int intensidad = Lista2DCaja[Compas][PosicionGrilla-1];
+    int intensidad = ConfiguracionGrilla.DevolverValordeunaGrilla(2,Compas,PosicionGrilla-1);
     switch (intensidad) {
     case 0:
         break;
-
     case 1:
         Caja->Reproducir(1);
         break;
-
     case 2:
         Caja->Reproducir(2);
         break;
-
     case 3:
         Caja->Reproducir(3);
         break;
     }
 }
-
 void MainWindow::ReproducirHiHat(int PosicionGrilla, int Compas)
 {
 
-    int intensidad = Lista2DHiHat[Compas][PosicionGrilla-1];
+    int intensidad = ConfiguracionGrilla.DevolverValordeunaGrilla(3,Compas,PosicionGrilla-1);
     switch (intensidad) {
     case 0:
         break;
-
     case 1:
         HiHatC->Reproducir(1);
         break;
-
     case 2:
          HiHatC->Reproducir(2);
         break;
-
     case 3:
          HiHatC->Reproducir(3);
         break;
-
     case 4:
         HiHatO->Reproducir(1);
         break;
-
     case 5:
         HiHatO->Reproducir(2);
         break;
-
     case 6:
         HiHatO->Reproducir(3);
         break;
-
     }
 }
 
 void MainWindow::TransformarVolumenSlideBar(int volumeSliderValue)
 {
     // volumeSliderValue is in the range [0..100]
-
     qreal linearVolume = QAudio::convertVolume(volumeSliderValue / qreal(100.0),
-                                               QAudio::LogarithmicVolumeScale,
+                                             QAudio::LogarithmicVolumeScale,
                                                QAudio::LinearVolumeScale);
-
-    //player.setVolume(qRound(linearVolume * 100));
 }
 
 void MainWindow::ReproducirAudios(int Pulso, int Grilla, int Compas)
@@ -577,77 +501,53 @@ void MainWindow::ReproducirAudios(int Pulso, int Grilla, int Compas)
     int PulsoaListaIndex= (Pulso-1)*6;
     PulsoaListaIndex = PulsoaListaIndex+Grilla;
     emit ReproducirAudiosConIntensidad(PulsoaListaIndex, Compas);
-
 }
 
 void MainWindow::RecibirValorIntensisdad(int Instrumento,int Compas, int Pulso, int Grilla,int intensidad)
 {
-
     MainWindow::findChild<QPushButton*>("BotonPulso1"+ListaInstrumentos[Instrumento] + QString::number(Grilla)+"_"+QString::number(Pulso))->setStyleSheet(ListadoColoresIntensidad[intensidad]);
-    //MainWindow::findChild<QList<int>*>("Estado"+Instrumento[])=;
     int grillaAIndexLista = ((Pulso-1)*6)+Grilla;
     switch(Instrumento)
     {
     case 0:
-
-        Lista2DBombo[Compas].replace(grillaAIndexLista-1,intensidad);
-
+        ConfiguracionGrilla.CambiarValorGrilla(1,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 1:
-        Lista2DCaja[Compas].replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(2,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 2:
-        Lista2DHiHat[Compas].replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(3,Compas,grillaAIndexLista-1,intensidad);
         break;
     case 3:
-        EstadoTom1_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(4,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 4:
-        EstadoTom2_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(5,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 5:
-        EstadoTom3_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(6,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 6:
-        EstadoTom4_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(7,Compas,grillaAIndexLista-1,intensidad);
         break;
 
     case 7:
-        EstadoCrash1_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(8,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 8:
-        EstadoCrash2_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(9,Compas,grillaAIndexLista-1,intensidad);
         break;
     case 9:
-        EstadoRide_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(10,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 10:
-        EstadoAcc_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(11,Compas,grillaAIndexLista-1,intensidad);
         break;
-
     case 11:
-        EstadoClick_1.replace(grillaAIndexLista-1,intensidad);
+        ConfiguracionGrilla.CambiarValorGrilla(12,Compas,grillaAIndexLista-1,intensidad);
         break;
-
-
-
-
-
-
-
-
     }
-
-
 }
-
 
 void MainWindow::DeschekearTodoslosBotonesCompas()
 {
@@ -689,7 +589,6 @@ void MainWindow::DeschekearTodoslosBotonesCompas()
 
 // SLOTS UI
 
-
 void MainWindow::on_comboBoxGrilla_currentIndexChanged(int index)
 {
 
@@ -697,10 +596,8 @@ void MainWindow::on_comboBoxGrilla_currentIndexChanged(int index)
     if(ui->comboBoxGrilla->currentIndex()>0){timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
 }
 
-
 void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
 {
-
     switch (arg1) {
     case 1:
         ui->GrupoPulso_1->setVisible(true);
@@ -712,10 +609,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
     case 2:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(false);
@@ -725,11 +620,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 3:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -739,10 +631,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
     case 4:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -752,11 +642,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 5:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -766,11 +653,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 6:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -780,11 +664,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(false);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 7:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -794,11 +675,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(true);
         ui->GrupoPulso_8->setVisible(false);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 8:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -808,11 +686,8 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(true);
         ui->GrupoPulso_8->setVisible(true);
         ui->GrupoPulso_9->setVisible(false);
-
         break;
-
     case 9:
-
         ui->GrupoPulso_1->setVisible(true);
         ui->GrupoPulso_2->setVisible(true);
         ui->GrupoPulso_3->setVisible(true);
@@ -822,28 +697,19 @@ void MainWindow::on_spinBoxPulsos_valueChanged(int arg1)
         ui->GrupoPulso_7->setVisible(true);
         ui->GrupoPulso_8->setVisible(true);
         ui->GrupoPulso_9->setVisible(true);
-
         break;
     }
     Actualizargrilla(ui->comboBoxGrilla->currentIndex());
-
 }
-
-
-
-
-
 void MainWindow::on_spinBoxBMP_valueChanged(int arg1)
 {
     if(ui->comboBoxGrilla->currentIndex()>0){timerExterno.CambiarMetrica(ui->spinBoxBMP->value(),ui->comboBoxGrilla->currentIndex(),ui->comboBoxSubdivision->currentText().toInt(),CompasActual);}
 }
 
-
 void MainWindow::on_Subdivision_currentIndexChanged(int index)
 {
 
 }
-
 
 void MainWindow::on_BotonPlay_toggled(bool checked)
 {
@@ -858,15 +724,12 @@ void MainWindow::on_BotonPlay_toggled(bool checked)
     ContadorTimer=1;
     ContadorPulsos=1;
     ContadorGrilla=1;
-
 }
-
 
 void MainWindow::on_BotonMixer_clicked()
 {
     VentanaverMixer->show();
 }
-
 
 void MainWindow::on_BotonCompas_1_clicked()
 {
@@ -985,7 +848,6 @@ void MainWindow::on_BotonCompas_16_clicked()
     ui->BotonCompas_16->setStyleSheet(BeatNaranjo);
     CompasActual = 16;
 }
-
 
 void MainWindow::on_BotonPulso1Bombo1_1_clicked()
 {
@@ -2144,13 +2006,11 @@ void MainWindow::on_comboBoxSubdivision_currentIndexChanged(int index)
     ui->EtiquetaMetrica->setText(QString::number(ui->spinBoxPulsos->value())+"/"+ui->comboBoxSubdivision->currentText());
 }
 
-
 void MainWindow::on_actionCargar_triggered()
 {
     CargarListas();
 
 }
-
 
 void MainWindow::on_actionGuardar_triggered()
 {

@@ -16,6 +16,7 @@ SOURCES += \
     elegirbeat.cpp \
     main.cpp \
     mainwindow.cpp \
+    ventanacarga.cpp \
     ventanamixer.cpp
 
 HEADERS += \
@@ -25,11 +26,13 @@ HEADERS += \
     datosgrilla.h \
     elegirbeat.h \
     mainwindow.h \
+    ventanacarga.h \
     ventanamixer.h
 
 FORMS += \
     elegirbeat.ui \
     mainwindow.ui \
+    ventanacarga.ui \
     ventanamixer.ui
 
 # Default rules for deployment.

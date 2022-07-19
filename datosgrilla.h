@@ -252,6 +252,9 @@ public:
 
     void GuardarListas();
     void CargarListas();
+    void CambiarValorGrilla(int canal, int compas, int posicion,int nuevovalor);
+public slots:
+    int DevolverValordeunaGrilla(int canal, int compas, int posicion);
 signals:
     void porcentajeTransferenciaCompletado(int porcentajeTransferencia);
 
