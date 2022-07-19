@@ -14,6 +14,7 @@ Clock::Clock(QObject *parent)
 Clock::~Clock()
 {
     delete timerGrafico;
+    this->deleteLater();
 
 }
 
@@ -48,6 +49,7 @@ void Clock::Stop()
 {
      qDebug()<<"Termina Timer Externo";
     timerGrafico->stop();
+
 }
 
 void Clock::CambioGrilla()

@@ -5,6 +5,7 @@
 #include <QTimer>
 #include <math.h>
 #include <QDebug>
+#include <QThread>
 
 
 class Clock : public QObject

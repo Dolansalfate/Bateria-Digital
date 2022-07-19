@@ -25,8 +25,8 @@ MainWindow::MainWindow(QWidget *parent)
     HiHatO = new AsignarCanal(nullptr,3);
     //NuevoCanal = new AsignarCanal(nullptr,4);
     //Creacion Thread Timer
-    //timerExterno = new Clock(nullptr);
-    //ThreadTimerExterno=new QThread();
+    /*timerExterno = new Clock(nullptr);
+    ThreadTimerExterno=new QThread();*/
     ThreadTimerExterno.setObjectName("Timer Thread");
 
 
@@ -52,7 +52,7 @@ MainWindow::MainWindow(QWidget *parent)
     ui->BotonCompas_1->setStyleSheet(BeatNaranjo);
     CompasActual=1;
     ApagarTodolosLed();
-    connect(VentanaverMixer,&VentanaMixer::CambioVolumen,this,&MainWindow::AjustarVolumen,Qt::QueuedConnection);
+    connect(VentanaverMixer,&VentanaMixer::CambioVolumen,this,&MainWindow::AjustarVolumen,Qt::DirectConnection);
     connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaLeds,Qt::QueuedConnection);
     connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::LogicaledsGrilla,Qt::QueuedConnection);
     connect(&timerExterno,&Clock::CambiarGrilla,this,&MainWindow::ReproducirAudios,Qt::QueuedConnection);
@@ -80,14 +80,15 @@ MainWindow::~MainWindow()
 {
 
     timerExterno.Stop();
-    ThreadTimerExterno.deleteLater();
+
+    ThreadTimerExterno.quit();
+
 
     delete ui;
     delete Bombo;
     delete Caja;
     delete HiHatC;
     delete HiHatO;
-    //delete timerExterno;
     delete VentanaverMixer;
     //delete ConfiguracionListas;
 

@@ -39,8 +39,8 @@ public:
 
     // Timmer
 
-    //Clock *timerExterno;
     Clock timerExterno;
+   //Clock timerExterno;
 
     AsignarCanal *Bombo;
     AsignarCanal *Caja;
@@ -180,7 +180,7 @@ public:
     // Ventanas Adicionales
 
     ElegirBeat *VentanaElegirBeat = new ElegirBeat(this);
-    VentanaMixer *VentanaverMixer = new VentanaMixer();
+    VentanaMixer *VentanaverMixer = new VentanaMixer(nullptr);
 
 
     void CargarListasaGrilla();

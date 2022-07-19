@@ -132,6 +132,8 @@ Mutex.lock();
     peakHaBajadoDeVolumen = peakPintadoEnProgressBar >= float(peakDelArrayActual);
     peakAnterior = peakDelArrayActual;
     qDebug()<<"NuevoIntento meter = "<<m_level;
+    m_level=m_level+200;
+    if(m_level<0){m_level=0;}
     emit Peak(Canalasignado,m_level);
     //pintarProgressBar();
 
